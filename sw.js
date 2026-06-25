@@ -18,7 +18,12 @@ const SHELL = [
   './src/app.js', './src/util.js', './src/hud.js', './src/idb.js', './src/store.js',
   './src/audio.js', './src/media.js', './src/timeline.js', './src/preview.js',
   './src/panels.js', './src/export.js', './src/ml.js', './src/cdn.js', './src/pwa.js',
-  './src/addons.js',
+  './src/addons.js', './src/ffmpeg.js',
+  './vendor/ffmpeg/index.js', './vendor/ffmpeg/classes.js', './vendor/ffmpeg/const.js',
+  './vendor/ffmpeg/errors.js', './vendor/ffmpeg/types.js', './vendor/ffmpeg/utils.js',
+  './vendor/ffmpeg/worker.js',
+  './vendor/ffmpeg-util/index.js', './vendor/ffmpeg-util/errors.js',
+  './vendor/ffmpeg-util/const.js', './vendor/ffmpeg-util/types.js',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png',
 ];
 

@@ -51,8 +51,8 @@ export async function exportAudio(format = 'wav') {
   } catch (e) { console.error(e); pr.fail(e.message); }
 }
 
-// ---- realtime video capture (canvas + master audio) ---------------------
-export async function exportVideo(onFrame) {
+// ---- video: realtime capture (canvas + master audio), optional MP4 transcode ----
+export async function exportVideo(onFrame, format = 'mp4') {
   const dur = S.duration();
   if (dur <= 0) return toast('Timeline is empty', { ms: 2200 });
   const canvas = document.getElementById('preview');
@@ -75,8 +75,16 @@ export async function exportVideo(onFrame) {
     rec.stop();
     await done;
     try { master().disconnect(dest); } catch (_) {}
-    const blob = new Blob(chunks, { type: mime });
-    download(blob, `${safe(S.state.project.name)}.${mime.includes('mp4') ? 'mp4' : 'webm'}`);
+    let blob = new Blob(chunks, { type: mime });
+
+    // If the user asked for MP4 and we didn't already capture MP4, transcode via ffmpeg.wasm.
+    if (format === 'mp4' && !mime.includes('mp4')) {
+      const { transcodeToMp4 } = await import('./ffmpeg.js');
+      blob = await transcodeToMp4(blob, { onStatus: pr.status });
+      download(blob, `${safe(S.state.project.name)}.mp4`);
+    } else {
+      download(blob, `${safe(S.state.project.name)}.${mime.includes('mp4') ? 'mp4' : 'webm'}`);
+    }
     pr.done('Export ready');
   } catch (e) { console.error(e); pr.fail(e.message); }
 }

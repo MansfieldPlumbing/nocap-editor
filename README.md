@@ -17,8 +17,8 @@ A working editor core is in place:
   edge-drag to trim, click the ruler to scrub, snapping, zoom, split, delete.
 - **Preview** — canvas compositor + Web-Audio playback with per-clip / per-track volume.
 - **Export** — deterministic offline audio mixdown to **WAV** (built-in) or **MP3**
-  (lamejs, lazy-loaded); **video** via realtime canvas+audio capture (WebM today,
-  ffmpeg.wasm MP4 planned).
+  (lamejs); **video** via realtime canvas+audio capture → **MP4** (H.264/AAC,
+  transcoded by **ffmpeg.wasm**) or fast **WebM**.
 - **Projects** — saved to browser storage (IndexedDB) and restored on reload.
 - **AI layer** — a thin provider abstraction (dp-onnx-ready). Live now: **Smart Auto-Trim**
   (silence detection, no download). Declared with honest status: captions (Whisper),
@@ -43,6 +43,7 @@ No framework, no bundler. `index.html` loads ES modules from `src/`:
 | `preview.js` | transport, canvas compositor, audio sync |
 | `audio.js` | shared Web-Audio graph (per-element gain → master) |
 | `export.js` | offline mixdown, WAV/MP3 encoders, realtime video capture |
+| `ffmpeg.js` | MP4 (H.264/AAC) transcode via ffmpeg.wasm (vendored glue + CDN core) |
 | `ml.js` | on-device AI provider abstraction + capability catalog |
 | `cdn.js` | CDN package registry + warm/uncache into the durable CDN cache |
 | `pwa.js` | service-worker registration, install prompt, update checking |
@@ -69,5 +70,6 @@ or a `coi-serviceworker` shim.)
 ## Roadmap
 - Real captions (Whisper) + background removal (RMBG-1.4, ported from art4quinn).
 - dp-onnx browser runtime → Kokoro voiceover; heavier models (Demucs, super-res, RIFE).
-- ffmpeg.wasm true MP4 mux; transitions & keyframes; PWA install + offline.
+- Frame-accurate MP4 export (render frames straight to ffmpeg instead of realtime capture).
+- Transitions & keyframes.
 - Single-file build: inline `src/` + CSS into one self-contained `nocap.html`.

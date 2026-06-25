@@ -5,6 +5,7 @@
 // registry persists to IndexedDB. art4quinn lazy-loads ML libs from a CDN on first
 // use; this makes that explicit and manageable.
 import { kvGet, kvSet } from './idb.js';
+import { CORE_URLS as FFMPEG_CORE_URLS } from './ffmpeg.js';
 
 const CDN_CACHE = 'nocap-cdn';
 const listeners = new Set();
@@ -19,9 +20,9 @@ const BUILTIN = [
   { id: 'lamejs', name: 'lamejs (MP3)', type: 'esm', builtin: true,
     desc: 'MP3 export encoder.',
     urls: ['https://cdn.jsdelivr.net/npm/@breezystack/lamejs@1.2.7/+esm'] },
-  { id: 'ffmpeg', name: 'ffmpeg.wasm', type: 'wasm', builtin: true,
-    desc: 'True MP4 mux/transcode (planned export path).',
-    urls: ['https://cdn.jsdelivr.net/npm/@ffmpeg/ffmpeg@0.12.10/dist/esm/index.js'] },
+  { id: 'ffmpeg', name: 'ffmpeg.wasm core', type: 'wasm', builtin: true,
+    desc: 'True MP4 (H.264/AAC) export. ~30 MB core — warm it for offline MP4.',
+    urls: FFMPEG_CORE_URLS },
   { id: 'ortweb', name: 'onnxruntime-web', type: 'wasm', builtin: true,
     desc: 'Generic ONNX runtime (until dp-onnx web build lands).',
     urls: ['https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.webgpu.min.js'] },

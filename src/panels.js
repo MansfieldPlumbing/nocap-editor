@@ -102,14 +102,16 @@ export function openExport() {
       <h3 style="margin:0 0 12px">Export</h3>
       <div class="field"><label>Format</label>
         <select id="exFmt">
-          <option value="mp4">MP4 — Video (canvas + audio)</option>
+          <option value="mp4">MP4 — Video (H.264 / AAC via ffmpeg.wasm)</option>
+          <option value="webm">WebM — Video (fast, no transcode)</option>
           <option value="mp3">MP3 — Audio</option>
           <option value="wav">WAV — Audio (lossless)</option>
         </select></div>
       <div class="field" id="exVidOpts"><label>Frame rate (FPS)</label>
         <select id="exFps"><option>24</option><option selected>30</option><option>60</option></select></div>
       <div style="font-size:11px;color:var(--muted);margin:6px 2px 14px">
-        Video records the preview in realtime. True MP4 mux via ffmpeg.wasm is planned.</div>
+        Video records the preview in realtime. MP4 then transcodes via ffmpeg.wasm
+        (first run downloads a ~30 MB core — warm it in Add-ons for offline MP4).</div>
       <div style="display:flex;gap:8px;justify-content:flex-end">
         <button class="btn ghost" id="exCancel">Cancel</button>
         <button class="btn primary" id="exGo">⤓ Export</button>
@@ -117,14 +119,15 @@ export function openExport() {
     </div>`;
   document.body.appendChild(back);
   const fmt = $('#exFmt', back), vid = $('#exVidOpts', back);
-  const sync = () => (vid.style.display = fmt.value === 'mp4' ? '' : 'none');
+  const isVideo = () => fmt.value === 'mp4' || fmt.value === 'webm';
+  const sync = () => (vid.style.display = isVideo() ? '' : 'none');
   fmt.addEventListener('change', sync); sync();
   const close = () => back.remove();
   $('#exCancel', back).addEventListener('click', close);
   back.addEventListener('click', (e) => { if (e.target === back) close(); });
   $('#exGo', back).addEventListener('click', () => {
     const f = fmt.value;
-    if (f === 'mp4') { p.fps = +$('#exFps', back).value; exportVideo(preview); }
+    if (isVideo()) { p.fps = +$('#exFps', back).value; exportVideo(preview, f); }
     else exportAudio(f);
     close();
   });
