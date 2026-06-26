@@ -8,8 +8,7 @@ entirely on-device, with real on-device AI (no accounts, no uploads, no backend)
 > HTML/CSS/JS. The original prototype is kept for reference at
 > [`reference-ai-studio-bundle.html`](reference-ai-studio-bundle.html).
 
-## Status — foundation
-A working editor core is in place:
+## What works today
 
 - **Media bin** — import video / audio / images (file picker or drag-and-drop), with
   generated thumbnails and audio waveforms.
@@ -64,8 +63,11 @@ python3 -m http.server 8080
 # open http://localhost:8080
 ```
 
-(For ffmpeg.wasm threading later you'll want cross-origin isolation — COOP/COEP headers
-or a `coi-serviceworker` shim.)
+No special headers needed: MP4 export uses the **single-threaded** ffmpeg.wasm core, so
+it works without cross-origin isolation (COOP/COEP) — on plain static hosting and on
+GitHub Pages. (A multi-threaded core would be faster but would require COOP/COEP and is
+not used.) Installing the PWA and full offline both require **HTTPS** (or `localhost`);
+the included GitHub Pages workflow handles that once merged to `main`.
 
 ## Roadmap
 - Real captions (Whisper) + background removal (RMBG-1.4, ported from art4quinn).
