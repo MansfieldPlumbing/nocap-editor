@@ -7,7 +7,7 @@
 import { kvGet, kvSet } from './idb.js';
 import { CORE_URLS as FFMPEG_CORE_URLS } from './ffmpeg.js';
 
-const CDN_CACHE = 'nocap-cdn';
+const CDN_CACHE = 'NoCap-cdn';
 const listeners = new Set();
 export function subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); }
 function emit() { for (const fn of listeners) fn(); }

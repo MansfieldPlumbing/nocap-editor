@@ -1,5 +1,5 @@
 /* ============================================================================
-   nocap — app layout (structure only; colors/tokens live in theme.css)
+   NoCap — app layout (structure only; colors/tokens live in theme.css)
    Grid: [ topbar ] / [ left | stage | right ] / [ timeline ]
    ============================================================================ */
 #app {
@@ -34,7 +34,9 @@
 .side.left { grid-area: left; border-right: 1px solid var(--border); }
 .side.right { grid-area: right; border-left: 1px solid var(--border); }
 .side h3 { margin: 0; padding: 12px 14px 8px; font-size: 11px; text-transform: uppercase;
-  letter-spacing: .07em; color: var(--muted); font-weight: 700; }
+  letter-spacing: .07em; color: var(--muted); font-weight: 700;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.btn.sm { padding: 2px 8px; font-size: 11px; text-transform: none; letter-spacing: 0; }
 .side .scroll { overflow-y: auto; flex: 1; padding: 0 10px 14px; }
 .tabs { display: flex; gap: 4px; padding: 8px 10px 0; }
 .tab { flex: 1; text-align: center; padding: 7px 4px; font-size: 12px; color: var(--muted);
@@ -51,6 +53,10 @@
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bin .item .k { position: absolute; top: 4px; left: 4px; font-size: 9px; text-transform: uppercase;
   background: rgba(0,0,0,.55); padding: 1px 5px; border-radius: 4px; }
+.bin .item .item-act { position: absolute; top: 3px; right: 3px; border: 0; cursor: pointer;
+  background: rgba(0,0,0,.55); color: #fff; font-size: 11px; line-height: 1; padding: 3px 5px;
+  border-radius: 4px; opacity: 0; transition: opacity .12s; }
+.bin .item:hover .item-act { opacity: 1; }
 .dropzone { border: 1.5px dashed var(--border-2); border-radius: var(--radius); padding: 22px 10px;
   text-align: center; color: var(--muted); font-size: 12px; cursor: pointer; margin: 6px 0 12px; }
 .dropzone.drag { border-color: var(--accent); color: var(--fg); background: color-mix(in srgb, var(--accent) 10%, transparent); }
