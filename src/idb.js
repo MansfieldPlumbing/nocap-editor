@@ -1,6 +1,6 @@
 // src/idb.js — minimal IndexedDB key/value store (no deps).
 // Two stores: "kv" (project JSON) and "blobs" (media File/Blob by id).
-const DB = 'nocap', VER = 1;
+const DB = 'NoCap', VER = 1;
 let _db = null;
 
 function open() {

@@ -1,4 +1,4 @@
-# nocap-editor
+# NoCap
 
 **FOSS relief from Play Store slop** — a client-side, no-build, vanilla-JS video & audio
 editor in the browser. The goal: a CapCut / mobile-audio-editor replacement that runs
@@ -30,7 +30,7 @@ entirely on-device, with real on-device AI (no accounts, no uploads, no backend)
   airplane mode. Updating the app **never wipes your CDN cache**.
 - **Add-ons / CDN cache** — a package manager (the bundle's "CDN Marketplace"): add/remove
   CDN packages (ESM, wasm, model weights) and **warm them for offline use**. The app cache
-  (`nocap-v*`) and the CDN cache (`nocap-cdn`) are independent, so updates and add-ons don't
+  (`NoCap-v*`) and the CDN cache (`NoCap-cdn`) are independent, so updates and add-ons don't
   step on each other.
 
 ## Architecture
@@ -52,7 +52,7 @@ No framework, no bundler. `index.html` loads ES modules from `src/`:
 | `panels.js` | inspector: clip props, Audio FX, Video FX, AI |
 | `app.js` | wiring: bin, top bar, transport, keyboard |
 
-`sw.js` precaches the shell (offline) and serves a separate `nocap-cdn` cache for
+`sw.js` precaches the shell (offline) and serves a separate `NoCap-cdn` cache for
 cross-origin packages; `manifest.webmanifest` + `icons/` make it installable.
 
 `theme.css` holds the design tokens (house style); `app.css` holds layout only.
@@ -76,4 +76,4 @@ the included GitHub Pages workflow handles that once merged to `main`.
 - dp-onnx browser runtime → Kokoro voiceover; heavier models (Demucs, super-res, RIFE).
 - Frame-accurate MP4 export (render frames straight to ffmpeg instead of realtime capture).
 - Transitions & keyframes.
-- Single-file build: inline `src/` + CSS into one self-contained `nocap.html`.
+- Single-file build: inline `src/` + CSS into one self-contained `NoCap.html`.

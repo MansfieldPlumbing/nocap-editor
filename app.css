@@ -1,5 +1,5 @@
 /* ============================================================================
-   nocap — app layout (structure only; colors/tokens live in theme.css)
+   NoCap — app layout (structure only; colors/tokens live in theme.css)
    Grid: [ topbar ] / [ left | stage | right ] / [ timeline ]
    ============================================================================ */
 #app {

@@ -1,6 +1,6 @@
 {
-  "name": "nocap — FOSS editor",
-  "short_name": "nocap",
+  "name": "NoCap — FOSS editor",
+  "short_name": "NoCap",
   "description": "On-device video & audio editor. No accounts, no uploads, no slop.",
   "id": "./",
   "start_url": "./",

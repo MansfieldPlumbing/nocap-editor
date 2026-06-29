@@ -1,6 +1,6 @@
-/* nocap — service worker.
+/* NoCap — service worker.
    Extends the ArlineArcade pattern (network-first app code, versioned cache,
-   cleanup on activate) with TWO additions nocap needs:
+   cleanup on activate) with TWO additions NoCap needs:
      1. A precached app shell so the editor is fully installable & offline.
      2. A separate, durable "CDN cache" for cross-origin packages (Transformers.js,
         lamejs, ffmpeg.wasm, model weights…). Cross-origin GETs are served
@@ -8,9 +8,9 @@
         known CDN hosts are auto-cached on first network hit.
    Update flow is explicit: we do NOT skipWaiting on install — the page detects the
    waiting worker and offers "Update", then posts SKIP_WAITING. */
-const VERSION = 'nocap-v1';
+const VERSION = 'NoCap-v1';
 const APP_CACHE = VERSION;
-const CDN_CACHE = 'nocap-cdn';      // intentionally NOT version-suffixed: survives app updates
+const CDN_CACHE = 'NoCap-cdn';      // intentionally NOT version-suffixed: survives app updates
 const FALLBACK = './index.html';
 
 const SHELL = [
