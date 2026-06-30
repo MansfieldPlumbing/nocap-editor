@@ -77,7 +77,12 @@
 /* phone/desktop layout is driven by :root[data-vp] (src/viewport.js), not a raw media query —
    one form-factor signal, see the "phone" section at the bottom of this file. */
 
-/* ---- editor command ribbon (obp) ---- */
+/* ---- editor command deck (flickpaint-shaped, .acrylic supplies the frosted glass) ---- */
+.ed-deck { grid-area: topbar; display: flex; align-items: center; gap: 6px; padding: 0 10px;
+  border-bottom: 1px solid var(--border); position: relative; z-index: 30;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.06); }
+
+/* ---- legacy obp ribbon styles (kept for .ribbon-btn, reused by the deck) ---- */
 .topbar { grid-area: topbar; display: flex; align-items: center; gap: 6px;
   padding: 0 8px; background: var(--glass); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border); position: relative; z-index: 30; }

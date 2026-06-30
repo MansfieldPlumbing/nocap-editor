@@ -48,30 +48,20 @@
       <!-- ── native surface: the CapCut-style A/V editor ── -->
       <section id="surface-editor" class="surface" hidden>
         <div id="app">
-          <!-- obp command ribbon: an icon cluster + a hamburger holding the full menu tree -->
-          <header class="topbar obp-bar">
-            <button id="btnEditorMenu" class="ribbon-btn icon" title="Menu" aria-haspopup="true"><span class="nf">&#xf0c9;</span></button>
-            <span class="ribbon-div"></span>
+          <!-- editor command deck (flickpaint-shaped): a slim acrylic strip — same frosted glass as
+               the dock + paint panes. Project name + the two primary verbs (Save · Export), with a ⋯
+               overflow that opens the homespun context menu for the rest (Add tracks · Add-ons ·
+               Install). Retires the obp ribbon + hamburger sheet — the chrome that read as disjointed. -->
+          <header class="ed-deck acrylic">
             <input id="projName" class="proj-name" value="Untitled project" spellcheck="false" />
             <div class="spacer"></div>
             <button id="btnSave" class="ribbon-btn icon" title="Save project to browser storage"><span class="nf">&#xf0c7;</span></button>
             <button id="btnExport" class="ribbon-btn primary" title="Export"><span class="nf">&#xf019;</span><span class="lbl">Export</span></button>
+            <button id="edMore" class="ribbon-btn icon" title="More" aria-haspopup="true"><span class="nf">&#xf142;</span></button>
+            <!-- kept (hidden) so addons.js / pwa.js keep their wiring; the ⋯ menu proxy-clicks them -->
+            <button id="btnAddons" hidden></button>
+            <button id="btnInstall" hidden></button>
           </header>
-
-          <!-- hamburger sheet — the full File/Tracks/App tree (obp pattern), one tap from the ribbon -->
-          <div id="editorMenu" class="menu-veil">
-            <div class="menu-sheet" role="menu">
-              <div class="menu-group">File</div>
-              <button class="menu-item" data-proxy="btnSave"><span class="nf">&#xf0c7;</span> Save project</button>
-              <button class="menu-item" data-proxy="btnExport"><span class="nf">&#xf019;</span> Export…</button>
-              <div class="menu-group">Tracks</div>
-              <button class="menu-item" data-proxy="btnAddVideoTrack"><span class="mi-plus">＋</span> Add video track</button>
-              <button class="menu-item" data-proxy="btnAddAudioTrack"><span class="mi-plus">＋</span> Add audio track</button>
-              <div class="menu-group">App</div>
-              <button class="menu-item" id="btnAddons"><span class="nf">&#xf013;</span> Add-ons &amp; CDN cache</button>
-              <button class="menu-item" id="btnInstall" hidden><span class="nf">&#xf019;</span> Install app</button>
-            </div>
-          </div>
 
           <!-- left: media bin -->
           <aside class="side left">

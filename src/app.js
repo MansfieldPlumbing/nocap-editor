@@ -8,7 +8,7 @@ import { initPreview, play, pause, toggle, seek, toStart, toEnd, drawAt } from '
 import { subscribe as onViewport } from './viewport.js';
 import { initPanels, openExport } from './panels.js';
 import { initAddons } from './addons.js';
-import { attachContextMenu } from './contextmenu.js';
+import { attachContextMenu, openMenu } from './contextmenu.js';
 import { initPWA } from './pwa.js';
 import * as CDN from './cdn.js';
 import { toast } from './hud.js';
@@ -20,11 +20,11 @@ function boot() {
   initAddons();
   wireMediaBin();
   wireTopbar();
-  wireEditorMenu();
+  wireDeckMenu();
   wireTransport();
   wireKeyboard();
   // PWA install/update + CDN package cache
-  initPWA(({ canInstall }) => { if (canInstall !== undefined) $('#btnInstall').hidden = !canInstall; });
+  initPWA((s) => { if (s.canInstall !== undefined) { installAvail = s.canInstall; const b = $('#btnInstall'); if (b) b.hidden = !s.canInstall; } });
   CDN.init().catch(() => {});
   // restore any saved project
   S.load().then((ok) => { if (ok) { renderBin(); toast('Restored your last project'); } });
@@ -40,18 +40,24 @@ function boot() {
   renderBin(); renderTransport(); renderStatus();
 }
 
-// ---- hamburger menu (obp): toggle the sheet; proxy items click the real (possibly hidden) buttons --
-function wireEditorMenu() {
-  const veil = $('#editorMenu'), btn = $('#btnEditorMenu');
-  if (!veil || !btn) return;
-  btn.addEventListener('click', (e) => { e.stopPropagation(); veil.classList.toggle('open'); });
-  veil.addEventListener('click', (e) => { if (e.target === veil) veil.classList.remove('open'); });
-  $$('.menu-item[data-proxy]', veil).forEach((it) => it.addEventListener('click', () => {
-    veil.classList.remove('open');
-    const t = document.getElementById(it.dataset.proxy); if (t) t.click();
-  }));
-  // btnAddons/btnInstall keep their own handlers (wired in wireTopbar / addons.js); just close after.
-  $$('.menu-item:not([data-proxy])', veil).forEach((it) => it.addEventListener('click', () => veil.classList.remove('open')));
+// ---- deck overflow (⋯): the homespun context menu replaces the obp hamburger sheet. Items
+// proxy-click the real (hidden) buttons, so addons.js / pwa.js / the timeline toolbar keep their wiring.
+let installAvail = false;
+function wireDeckMenu() {
+  const more = $('#edMore');
+  if (!more) return;
+  const proxy = (id) => () => document.getElementById(id)?.click();
+  const items = () => {
+    const list = [
+      { label: 'Add video track', icon: '＋', run: proxy('btnAddVideoTrack') },
+      { label: 'Add audio track', icon: '＋', run: proxy('btnAddAudioTrack') },
+      '-',
+      { label: 'Add-ons & CDN cache', icon: '⚙', run: proxy('btnAddons') },
+    ];
+    if (installAvail) list.push({ label: 'Install app', icon: '⤓', run: proxy('btnInstall') });
+    return list;
+  };
+  more.addEventListener('click', () => { const r = more.getBoundingClientRect(); openMenu(r.right - 8, r.bottom + 4, items()); });
 }
 
 // ---- status bar: selection on the left, project facts on the right ----
