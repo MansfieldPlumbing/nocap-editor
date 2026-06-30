@@ -17,6 +17,15 @@
       document.documentElement.dataset.vp = (p === 'desktop' || p === 'phone') ? p
         : ((window.innerWidth || 1024) >= 820 ? 'desktop' : 'phone');
     } catch (e) { document.documentElement.dataset.vp = 'desktop'; }
+    // theme, applied before paint (no flash): mirrors src/theme-engine.js
+    try { var R = document.documentElement, m = localStorage.getItem('coolpro-mode') || 'dark';
+      if (m === 'auto') m = (window.matchMedia && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light';
+      R.dataset.mode = m;
+      if (m === 'light') { var L = {'--bg':'#eef1f6','--surface':'#ffffff','--surface-2':'#e7eaf1','--panel':'#f4f6fa','--border':'#d7dce6','--border-2':'#c2c9d8','--fg':'#1a1d24','--muted':'#5c6474','--faint':'#9aa2b2','--mica-rgb':'255 255 255'}; for (var k in L) R.style.setProperty(k, L[k]); }
+      var a = localStorage.getItem('coolpro-accent'); if (a) R.style.setProperty('--accent', a);
+      R.dataset.mica = (localStorage.getItem('coolpro-mica') === 'off') ? 'off' : 'on';
+      var o = localStorage.getItem('coolpro-opacity'); if (o) R.style.setProperty('--transparency', o);
+    } catch (e) {}
   </script>
 </head>
 <body data-app="editor">
@@ -35,12 +44,10 @@
     <div id="stage" class="stage-host">
       <!-- ── launcher: the front door (phone-first — arrive at a chooser, not a surface) ── -->
       <section id="surface-home" class="surface">
-        <div class="launcher">
-          <div class="launcher-head">
-            <h1>Cool<span class="no">Pro</span></h1>
-            <p>FOSS on-device studio — video, audio, image &amp; 3D. Pick a surface.</p>
-          </div>
-          <div id="launchGrid" class="launch-grid"></div>
+        <div class="nv-root">
+          <div class="nv-head"><h1>Cool<span class="no">Pro</span></h1></div>
+          <div id="navCrumbs" class="nv-crumbs"></div>
+          <div id="navHost" class="nv-host"></div>
         </div>
       </section>
 
@@ -153,10 +160,11 @@
 
   <script type="module" src="src/app.js"></script>
   <script type="module">
+    import { initThemeEngine } from './src/theme-engine.js';
     import { initViewport } from './src/viewport.js';
     import { initShell } from './src/shell.js';
     import { initShare } from './src/share.js';
-    function boot() { initViewport(); initShell(); initShare(); }
+    function boot() { initThemeEngine(); initViewport(); initShell(); initShare(); }
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
     else boot();
   </script>

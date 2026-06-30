@@ -34,34 +34,12 @@ function buildRail() {
   rail.querySelectorAll('.app-tab').forEach((b) => b.addEventListener('click', () => switchTo(b.dataset.app)));
 }
 
-// The Launcher front door — big tiles for each surface, projected from the registry. One column
-// on phone, a grid on desktop (the layout follows :root[data-vp], not this code).
+// The Launcher front door — a composable drill-down (settings.obp shape): first-class templates
+// across every surface, projected by the nav engine from launcher.js's tree.
 function buildLauncher() {
-  const host = document.getElementById('launchGrid');
-  if (!host) return;
-  const tiles = Registry.tiles().map((r) =>
-    `<button class="launch-tile" data-app="${r.id}">
-       <span class="ic">${r.icon}</span>
-       <span class="meta"><span class="nm">${escHtml(r.name)}</span><span class="bl">${escHtml(r.blurb)}</span></span>
-     </button>`).join('');
-  // Quick actions (not surfaces): file in → options/result → share out.
-  const convertTile =
-    `<button class="launch-tile" data-action="convert">
-       <span class="ic">⇄</span>
-       <span class="meta"><span class="nm">Convert</span><span class="bl">A video/audio/image → extract audio, trim, outpaint, convert, remove background → share it out.</span></span>
-     </button>`;
-  const stitchTile =
-    `<button class="launch-tile" data-action="stitch">
-       <span class="ic">🧵</span>
-       <span class="meta"><span class="nm">Stitch</span><span class="bl">Pick several videos → join them end to end → share the result.</span></span>
-     </button>`;
-  host.innerHTML = tiles + convertTile + stitchTile;
-  host.querySelectorAll('.launch-tile').forEach((b) => b.addEventListener('click', () => {
-    const a = b.dataset.action;
-    if (a === 'convert') import('./convert.js').then((m) => m.pickAndConvert());
-    else if (a === 'stitch') import('./convert.js').then((m) => m.pickAndStitch());
-    else switchTo(b.dataset.app);
-  }));
+  const host = document.getElementById('navHost'), crumbs = document.getElementById('navCrumbs');
+  if (!host || !crumbs) return;
+  import('./launcher.js').then((m) => m.initLauncher(host, crumbs, { switchTo }));
 }
 
 function wireChrome() {
