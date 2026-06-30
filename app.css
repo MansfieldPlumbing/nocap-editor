@@ -161,7 +161,25 @@
 .tl-toolbar { display: flex; align-items: center; gap: 8px; padding: 6px 10px; border-bottom: 1px solid var(--border); }
 .tl-toolbar .spacer { flex: 1; }
 .tl-zoom { display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 12px; }
-.tl-scroll { position: relative; overflow: auto; flex: 1; }
+.tl-body { display: flex; flex: 1; min-height: 0; }
+.tl-headers { width: 150px; flex-shrink: 0; position: relative; overflow: hidden;
+  background: var(--panel); border-right: 1px solid var(--border); }
+.tl-headers-inner { position: absolute; top: 0; left: 0; right: 0; will-change: transform; }
+.trk-head { box-sizing: border-box; padding: 7px 9px; display: flex; flex-direction: column;
+  justify-content: space-between; border-bottom: 1px solid var(--border);
+  border-left: 3px solid var(--track-video); background: color-mix(in srgb, var(--track-video) 12%, var(--panel)); }
+.trk-head[data-kind="audio"] { border-left-color: var(--track-audio);
+  background: color-mix(in srgb, var(--track-audio) 12%, var(--panel)); }
+.trk-top { display: flex; align-items: center; gap: 6px; }
+.trk-name { flex: 1; font-size: 11px; font-weight: 600; color: var(--fg);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.trk-btn { width: 22px; height: 20px; border: 1px solid var(--border-2); border-radius: 4px;
+  background: var(--surface-2); color: var(--muted); font-size: 10px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
+.trk-btn:hover { color: var(--fg); }
+.trk-m.on { background: var(--error); color: #fff; border-color: var(--error); }
+.trk-s.on { background: var(--warning); color: #1a1d24; border-color: var(--warning); }
+.trk-vol { width: 100%; height: 4px; accent-color: var(--accent); cursor: pointer; }
+.tl-scroll { position: relative; overflow: auto; flex: 1; min-width: 0; }
 .tl-canvas-wrap { position: relative; }
 #tl-canvas { display: block; }
 #tl-playhead { position: absolute; top: 0; width: 2px; background: var(--playhead); pointer-events: none;
@@ -252,6 +270,7 @@
   grid-template-areas: "topbar" "stage" "timeline" "left" "right" "status";
 }
 :root[data-vp="phone"] .menu-sheet { left: 8px; right: 8px; min-width: 0; }
+:root[data-vp="phone"] .tl-headers { width: 118px; }
 :root[data-vp="phone"] .side { display: flex; }
 :root[data-vp="phone"] .side.left  { border: 0; border-top: 1px solid var(--border); }
 :root[data-vp="phone"] .side.right { border: 0; border-top: 1px solid var(--border); }
