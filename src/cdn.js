@@ -6,6 +6,7 @@
 // use; this makes that explicit and manageable.
 import { kvGet, kvSet } from './idb.js';
 import { CORE_URLS as FFMPEG_CORE_URLS } from './ffmpeg.js';
+import { POSE_URLS } from '../vendor/ml/pose.js';
 
 const CDN_CACHE = 'nocap-cdn';
 const listeners = new Set();
@@ -26,6 +27,9 @@ const BUILTIN = [
   { id: 'ortweb', name: 'onnxruntime-web', type: 'wasm', builtin: true,
     desc: 'Generic ONNX runtime (until dp-onnx web build lands).',
     urls: ['https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/ort.webgpu.min.js'] },
+  { id: 'mediapipe', name: 'MediaPipe pose', type: 'wasm', builtin: true,
+    desc: 'Body tracking for the Animate surface (~15 MB incl. model) — warm it for offline mocap.',
+    urls: POSE_URLS },
 ];
 
 let user = [];                  // user-added packages

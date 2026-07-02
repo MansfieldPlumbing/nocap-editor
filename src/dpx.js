@@ -52,6 +52,7 @@ export const CAPS = [
   { id: 'matte',    group: 'image', label: 'Background Removal', desc: 'Subject cut-out via RMBG-1.4 (art4quinn). Runs now on image clips.', status: 'model' },
   { id: 'wand',     group: 'image', label: 'AI Magic Wand',      desc: 'Tap-to-select an object (SlimSAM). Live in the Paint surface.', status: 'model' },
   { id: 'eraser',   group: 'image', label: 'Magic Eraser',       desc: 'Content-aware fill / object removal (LaMa). Live in the Paint surface.', status: 'model' },
+  { id: 'pose',     group: 'image', label: 'Pose Capture',       desc: 'Body tracking (MediaPipe) — auto-rigs characters & drives mocap. Live in the Animate surface.', status: 'model' },
   { id: 'captions', group: 'audio', label: 'Auto-Subtitling',    desc: 'Auto-synced subtitles via Whisper (Transformers.js).', status: 'soon' },
   { id: 'tts',      group: 'audio', label: 'Voiceover (TTS)',    desc: 'Kokoro speech — wires to the dpx runtime.', status: 'native' },
   { id: 'denoise',  group: 'audio', label: 'Denoise Audio',      desc: 'Reduce background noise.', status: 'soon' },
@@ -68,6 +69,7 @@ export async function run(capId) {
   const ext = providerFor(capId);
   if (ext) { const pr = progress(`${cap.label}…`); try { await ext.p.run(capId, {}, pr.status); pr.done(); } catch (e) { pr.fail(e.message); } return; }
   if (capId === 'wand' || capId === 'eraser') return toast(`${cap.label} runs in the Paint surface — open Paint and pick a layer.`, { ms: 3200 });
+  if (capId === 'pose') return toast('Pose Capture runs in the Animate surface — open Animate and rig a character.', { ms: 3200 });
   if (cap.status === 'native') toast('Waiting on the dpx browser runtime — not wired yet.', { ms: 3000 });
   else toast(`${cap.label} is planned — coming soon.`, { ms: 2600 });
 }

@@ -8,7 +8,7 @@
         known CDN hosts are auto-cached on first network hit.
    Update flow is explicit: we do NOT skipWaiting on install — the page detects the
    waiting worker and offers "Update", then posts SKIP_WAITING. */
-const VERSION = 'coolpro-v10';
+const VERSION = 'coolpro-v11';
 const APP_CACHE = VERSION;
 const CDN_CACHE = 'nocap-cdn';      // stable bucket name (NOT version-suffixed): survives app updates
 const SHARE_CACHE = 'coolpro-share'; // transient: Android share-target hand-off, drained on boot
@@ -25,7 +25,8 @@ const SHELL = [
   './src/addons.js', './src/ffmpeg.js',
   // shared, reused-everywhere assets
   './shared/presenter.js',
-  './vendor/ml/segment.js', './vendor/ml/select.js', './vendor/ml/inpaint.js',
+  './vendor/ml/segment.js', './vendor/ml/select.js', './vendor/ml/inpaint.js', './vendor/ml/pose.js',
+  './vendor/anim/skeleton.js', './vendor/anim/rig.js', './vendor/anim/motion.js',
   './vendor/ui/flickpaint-ui.css',
   './vendor/ui/fonts/selawk.ttf', './vendor/ui/fonts/CascadiaCodeNF.ttf',
   './vendor/ffmpeg/index.js', './vendor/ffmpeg/classes.js', './vendor/ffmpeg/const.js',
@@ -36,6 +37,7 @@ const SHELL = [
   // guest surfaces (entry points; heavier guest assets cache on first use)
   './apps/paint/index.html',
   './apps/three/index.html', './apps/three/app.js', './apps/three/characters.json',
+  './apps/animate/index.html', './apps/animate/app.js',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png',
 ];
 
@@ -43,6 +45,7 @@ const SHELL = [
 const CDN_HOSTS = [
   'cdn.jsdelivr.net', 'unpkg.com', 'esm.sh', 'cdnjs.cloudflare.com',
   'huggingface.co', 'cdn-lfs.huggingface.co', 'cas-bridge.xethub.hf.co',
+  'storage.googleapis.com',   // MediaPipe .task models
 ];
 
 self.addEventListener('install', (e) => {
