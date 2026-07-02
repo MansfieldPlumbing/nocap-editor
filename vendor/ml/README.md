@@ -1,11 +1,15 @@
 # assets/ml — on-device ML harness
 
-Shared, build-free ML for art4quinn. Three modules power the AI tools across the
+Shared, build-free ML for art4quinn. Four modules power the AI tools across the
 apps:
 
 - `segment.js` — **background erase / cut-out** (RMBG-1.4). Used by paint, three, gallery.
 - `select.js` — **AI Magic Wand**: tap-to-select an object (SlimSAM). Used by paint.
 - `inpaint.js` — **Magic Eraser**: content-aware fill / object removal (LaMa, onnxruntime-web). Used by paint.
+- `pose.js` — **Pose Capture**: 33 body landmarks (MediaPipe PoseLandmarker, Apache-2.0 —
+  JS package and `.task` model). Auto-rigs characters and drives live mocap in the Animate
+  surface (`vendor/anim` consumes it via `skeleton.poseFromLandmarks`). Same pattern:
+  lazy CDN load, single-job lock, GPU→CPU fallback, `disposePose()`.
 
 All three follow the same memory-safe pattern (downscale before inference, GPU
 compositing, single-job lock, `dispose*()` to free memory). `select.js`/`inpaint.js`

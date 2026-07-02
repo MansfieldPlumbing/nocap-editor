@@ -76,6 +76,24 @@ from LaMa to SD-inpaint with zero UI change** — the generative rung just regis
 provider for the `inpaint` atom. Inspiration: **Local Dream** (NPU SD on Android), **subsystem** +
 **DPX** (the bespoke inferencer).
 
+## 5. Animation: a character is a rigged object (author's directive, 2026-07)
+
+The suite is an **A/V editing super-app**, and animation is a medium in it, not a gimmick:
+**Meta's AnimatedDrawings method** (MIT — silhouette mesh · humanoid skeleton · retargeted
+motion) lives in `vendor/anim` as shared vanilla JS, and **MediaPipe pose** is the sensing rung
+behind the `pose` capability in dpx.
+
+- **The rig is one engine, every surface projects it** — the Animate studio deforms a flat
+  stage mesh; the 3D standee binds the *same* rig to its extruded grid. One skeleton, one
+  skinning, two projections (the §1 doctrine applied to motion).
+- **Motion is a source-agnostic clip** — procedural presets, camera mocap, or any video of a
+  person (MediaPipe → baked clip); retargeting transfers bone *directions* onto the
+  character's bone *lengths*, so any motion drives any drawing.
+- **Animations are clips** — the stage records and the result lands on the editor timeline
+  through the guests' `export-media` bridge. The editor stays the hub.
+- Upgrade path: ARAP behind `deformPoints` · a BVH library · multi-character scenes ·
+  Paint cut-out → Animate hand-off · drawn-figure pose model when one ships small enough.
+
 ## Order of attack (near-term, revisable)
 
 1. Shared **flickpaint shell** scaffold; bring the Editor into its panes (retire the obp ribbon).
@@ -83,6 +101,7 @@ provider for the `inpaint` atom. Inspiration: **Local Dream** (NPU SD on Android
 3. **Atomized selection** (`select` atom, Google-Photos-shaped) shared by matte / erase / extract.
 4. Contextual top bar → then drag-to-pin customization.
 5. Generative rung: SD1.5 inpaint via DPX/QNN behind the same `inpaint` call site.
+6. Animation deepening per §5 — ARAP · clip library · multi-character.
 
 > This document changes as the vision sharpens — but the **one-shell / atomized-verbs / DPX-everywhere**
 > spine does not without the author's say-so.

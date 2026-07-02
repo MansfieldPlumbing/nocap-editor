@@ -1,25 +1,27 @@
 # CoolPro
 
 **FOSS relief from Play Store slop** — a client-side, no-build, vanilla-JS creative studio in
-the browser. One app that is a **CapCut**-style A/V editor, a **Paint-Shop-Pro**-style raster
-studio, and a **3D model maker** — sharing one inference runtime and one object model, running
-entirely on-device (no accounts, no uploads, no backend).
+the browser. One A/V editing super-app: a **CapCut**-style A/V editor, a **Paint-Shop-Pro**-style
+raster studio, a **3D model maker**, and a **2D animation studio** (draw a character, it gets a
+skeleton, make it dance — or act it out on camera) — sharing one inference runtime and one object
+model, running entirely on-device (no accounts, no uploads, no backend).
 
 > Merged from three sibling repos — the **nocap** A/V editor (this repo's origin), **art4quinn**
 > (paint + 3D + image ML), and **arlinearcade** (the shared painter + audio helpers) — onto the
 > architectural spine of **subsystem** (the VOM object model and the dp-onnx → **dpx** runtime).
 > The shared code is shared *on purpose*: one ML harness and one UI chrome power every surface.
 
-## The three surfaces (one shell)
+## The four surfaces (one shell)
 
-The top bar is the **Shell** — an app switcher that mounts one *presenter* at a time. Switch
-with the rail; everything shares the same media, the same ML runtime, and the same house style.
+The Shell mounts one *presenter* at a time; the acrylic taskbar switches. Everything shares
+the same media, the same ML runtime, and the same house style.
 
 | surface | what it is | brings |
 | --- | --- | --- |
 | 🎬 **Editor** | CapCut-style multitrack A/V editor | timeline, preview compositor, Web-Audio mix, WAV/MP3/WebM/**MP4** (ffmpeg.wasm) export |
 | 🖌️ **Paint** | Paint-Shop-Pro raster studio (`apps/paint`) | layers, blend modes, brush/pencil/marker/fill, blur/smudge/dodge/burn, **AI Magic Wand** (SlimSAM), **Magic Eraser** (LaMa), **Erase Background** (RMBG) |
-| 🧊 **3D** | image → silhouette → paintable standee (`apps/three`) | drop any image, extrude to a 2-sided relief on a floor, paint on the mesh by raycast, **AI cut-out** (RMBG) |
+| 🧊 **3D** | image → silhouette → paintable standee (`apps/three`) | drop any image, extrude to a 2-sided relief on a floor, paint on the mesh by raycast, **AI cut-out** (RMBG), **motion presets** — the statue dances while you paint it |
+| 🕺 **Animate** | 2D animation studio (`apps/animate`) | the **AnimatedDrawings** method in vanilla JS (`vendor/anim`): auto-skeleton (**MediaPipe** pose, template fallback), drag-the-dots joint fix-up, geodesic-skinned mesh, preset moves (wave · walk · dance · jacks · zombie · bounce), **live camera mocap**, motion baked **from any video of a person**, record → clip lands on the editor timeline |
 
 ## Architecture — the subsystem doctrine, in the browser
 
@@ -47,13 +49,15 @@ projection of it, nothing holds its own truth, behaviours are verbs on objects.*
   with a `Sys.vom` of its own, designed to bind a host-injected provider with zero UI change.)
 
 ```
-index.html ── Shell (app rail)
+index.html ── Shell (taskbar dock)
    ├─ src/shell.js · registry.js · presenter.js   the chrome (projects the namespace)
    ├─ src/vom.js                                   the model (one refcounted namespace)
-   ├─ src/dpx.js  → vendor/ml/{segment,select,inpaint}.js   the runtime (RMBG · SlimSAM · LaMa)
-   ├─ surface: Editor (native)  src/{store,timeline,preview,audio,export,panels,…}.js
-   ├─ surface: Paint  (guest)   apps/paint/   ← shared vendor/ml + vendor/ui
-   └─ surface: 3D     (guest)   apps/three/   ← shared vendor/ml + vendor/ui
+   ├─ src/dpx.js  → vendor/ml/{segment,select,inpaint,pose}.js   the runtime (RMBG · SlimSAM · LaMa · MediaPipe)
+   ├─ vendor/anim/{skeleton,rig,motion}.js         the character rig engine (AnimatedDrawings method)
+   ├─ surface: Editor  (native)  src/{store,timeline,preview,audio,export,panels,…}.js
+   ├─ surface: Paint   (guest)   apps/paint/    ← shared vendor/ml + vendor/ui
+   ├─ surface: 3D      (guest)   apps/three/    ← shared vendor/ml + vendor/ui + vendor/anim
+   └─ surface: Animate (guest)   apps/animate/  ← shared vendor/ml + vendor/ui + vendor/anim
 ```
 
 `theme.css` holds the editor's design tokens; `vendor/ui/flickpaint-ui.css` is the guests' shared
@@ -86,17 +90,22 @@ editor timeline (`manifest.webmanifest` + `sw.js` stash the share POST, `src/sha
 
 ## Roadmap (the merge, continued)
 
-Landed: the spine (`vom`/`dpx`/`registry`/`shell`/`presenter`); the three surfaces, switchable;
+Landed: the spine (`vom`/`dpx`/`registry`/`shell`/`presenter`); the four surfaces, switchable;
 shared ML/UI deduplicated; real RMBG matte through `dpx`; phone/desktop awareness + Launcher;
-Android share-target + file-handlers. Next:
+Android share-target + file-handlers; the **Animate** studio (`vendor/anim` rig engine +
+MediaPipe `pose` capability) with the same rig animating the 3D standee; **cross-surface flow**
+— guests post `export-media` blobs that land on the editor timeline (Animate's rendered clips
+ride it today), and `sendToSurface` carries files into guests (Convert's "Animate character").
+Next:
 
 - **Hoist ML into `dpx` across the frame boundary** — today each guest realm loads its own ML
-  instance; route paint/3D inference through the host `dpx` so the model loads once, governed by
-  the VOM.
+  instance; route paint/3D/animate inference through the host `dpx` so the model loads once,
+  governed by the VOM.
 - **Bind the guests' `Sys.vom` to `src/vom.js`** — paint's `__SUBSYSTEM_PROVIDER__` seam already
   exists; make CoolPro the injected provider so layers live in the real namespace.
 - **dpx-wasm** — register the native engine's browser build as the `dpx` provider; flip `tts`
   (Kokoro) and the heavier video caps from `native`/`soon` to `ready`.
-- **Cross-surface flow** — send a Paint cut-out or a 3D screenshot straight onto the editor timeline.
+- **Animation, deeper** — true ARAP deformation behind `deformPoints`, a BVH clip library,
+  multi-character scenes, Paint cut-out → Animate hand-off.
 - **Audio surface** (Cool-Edit-Pro side) — a dedicated waveform editor reusing `vendor/audio/`.
 - Frame-accurate MP4 export, transitions & keyframes, single-file build.
