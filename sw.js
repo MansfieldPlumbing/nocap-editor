@@ -8,7 +8,7 @@
         known CDN hosts are auto-cached on first network hit.
    Update flow is explicit: we do NOT skipWaiting on install — the page detects the
    waiting worker and offers "Update", then posts SKIP_WAITING. */
-const VERSION = 'coolpro-v11';
+const VERSION = 'coolpro-v12';
 const APP_CACHE = VERSION;
 const CDN_CACHE = 'nocap-cdn';      // stable bucket name (NOT version-suffixed): survives app updates
 const SHARE_CACHE = 'coolpro-share'; // transient: Android share-target hand-off, drained on boot
@@ -37,6 +37,7 @@ const SHELL = [
   // guest surfaces (entry points; heavier guest assets cache on first use)
   './apps/paint/index.html',
   './apps/three/index.html', './apps/three/app.js', './apps/three/characters.json',
+  './apps/three/vendor/three.module.min.js', './apps/three/vendor/addons/controls/OrbitControls.js',
   './apps/animate/index.html', './apps/animate/app.js',
   './icons/icon-192.png', './icons/icon-512.png', './icons/icon-maskable-512.png',
 ];

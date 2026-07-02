@@ -13,10 +13,14 @@ const VER = '0.10.14';
 export const POSE_BASE = `https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${VER}`;
 export const POSE_MODEL = 'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task';
 // Every URL the capability needs — cdn.js registers these as the warmable "mediapipe" package.
+// Both wasm variants: FilesetResolver picks SIMD or not per device, so an offline warm must
+// cover whichever this phone will ask for.
 export const POSE_URLS = [
   `${POSE_BASE}/vision_bundle.mjs`,
   `${POSE_BASE}/wasm/vision_wasm_internal.js`,
   `${POSE_BASE}/wasm/vision_wasm_internal.wasm`,
+  `${POSE_BASE}/wasm/vision_wasm_nosimd_internal.js`,
+  `${POSE_BASE}/wasm/vision_wasm_nosimd_internal.wasm`,
   POSE_MODEL,
 ];
 
@@ -75,11 +79,16 @@ export async function detectImage(imageLike, onStatus) {
   } finally { _busy = false; }
 }
 
-// One detection on a playing <video> at timestamp tsMs (monotonic per session).
-// Caller owns the loop; no lock here — it's one synchronous call on the video thread.
+// One detection on a playing <video>. Caller owns the loop; no lock here — it's one
+// synchronous call on the video thread. MediaPipe demands STRICTLY increasing timestamps
+// for the lifetime of the landmarker, but our callers legitimately restart clocks (camera
+// uses performance.now(), a video file uses currentTime·1000 from ~0) — so keep our own
+// monotonic clock and only use the caller's timestamp when it moves forward.
+let _lastTs = 0;
 export async function detectVideo(video, tsMs, onStatus) {
   const r = await ensurePose('VIDEO', onStatus);
-  const res = r.landmarker.detectForVideo(video, tsMs);
+  _lastTs = Math.max(_lastTs + 1, Math.round(tsMs) || 0);
+  const res = r.landmarker.detectForVideo(video, _lastTs);
   return (res && res.landmarks && res.landmarks[0]) || null;
 }
 

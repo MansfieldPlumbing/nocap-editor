@@ -139,9 +139,13 @@ export function makeClip(frames, fps = 30) {
 export function sampleClip(clip, t, loop = true) {
   const n = clip.frames.length;
   if (!n) return null;
+  if (n === 1) return clip.frames[0];
   let ft = t * clip.fps;
   if (loop) ft = ((ft % n) + n) % n; else ft = Math.min(n - 1, Math.max(0, ft));
-  const i0 = Math.floor(ft), i1 = Math.min(n - 1, i0 + 1), u = ft - i0;
+  const i0 = Math.floor(ft), u = ft - i0;
+  // looping wraps the last frame into the first instead of holding it, so playback doesn't
+  // freeze for the whole final-frame period and then jump on the exact wrap boundary
+  const i1 = loop ? (i0 + 1) % n : Math.min(n - 1, i0 + 1);
   const a = clip.frames[i0], b = clip.frames[i1];
   const out = {};
   for (const k in a) {
@@ -163,8 +167,11 @@ export function samplePose(motion, t, loop = true) {
 export function rootFor(srcPose, srcRefPose, bindPose) {
   const bindRoot = bindPose.root;
   if (!srcRefPose) return [bindRoot[0], bindRoot[1]];
-  const srcTorso = Math.hypot(srcRefPose.neck[0] - srcRefPose.root[0], srcRefPose.neck[1] - srcRefPose.root[1]) || 1;
-  const chrTorso = Math.hypot(bindPose.neck[0] - bindPose.root[0], bindPose.neck[1] - bindPose.root[1]) || 1;
+  // floor, not just a zero-guard: a near-degenerate first detection (mid-shoulders almost
+  // touching mid-hips) must not blow the scale factor up and fling the character offscreen
+  const MIN_TORSO = 0.05;
+  const srcTorso = Math.max(MIN_TORSO, Math.hypot(srcRefPose.neck[0] - srcRefPose.root[0], srcRefPose.neck[1] - srcRefPose.root[1]));
+  const chrTorso = Math.max(MIN_TORSO, Math.hypot(bindPose.neck[0] - bindPose.root[0], bindPose.neck[1] - bindPose.root[1]));
   const s = chrTorso / srcTorso;
   return [bindRoot[0] + (srcPose.root[0] - srcRefPose.root[0]) * s,
           bindRoot[1] + (srcPose.root[1] - srcRefPose.root[1]) * s];

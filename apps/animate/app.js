@@ -375,12 +375,19 @@ function stopMocap() {
   $('mocapCam').classList.remove('active');
 }
 
+let camPending = false;
 $('mocapCam').addEventListener('click', async () => {
   if (camStream) { stopMocap(); setStatus('camera off'); return; }
+  if (camPending) return;                    // permission prompt already up — don't stack requests
   if (!rig) return setStatus('open a drawing first');
+  camPending = true;
+  let stream;
   try {
-    camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 } }, audio: false });
-  } catch (e) { return setStatus('camera unavailable: ' + e.message); }
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 } }, audio: false });
+  } catch (e) { camPending = false; return setStatus('camera unavailable: ' + e.message); }
+  camPending = false;
+  if (camStream) { for (const tr of stream.getTracks()) tr.stop(); return; }   // toggled off mid-prompt
+  camStream = stream;
   pip.srcObject = camStream;
   await pip.play().catch(() => {});
   document.body.dataset.mocap = 'on';
@@ -449,9 +456,13 @@ function pickMime() {
   return 'video/webm';
 }
 
+let recording = false;
 $('recBtn').addEventListener('click', async () => {
+  if (recording) return;
   if (!rig || !mesh) return setStatus('open a drawing first');
   if (!motion && !livePose) return setStatus('pick a motion first');
+  recording = true;
+  if (editMode) setEditMode(false);          // never record the frozen bind pose
   playing = true; syncPlay();
   const mime = pickMime();
   const stream = renderer.domElement.captureStream(30);
@@ -476,6 +487,7 @@ $('recBtn').addEventListener('click', async () => {
   $('recBtn').innerHTML = '⏺ Record clip';
   $('resultRow').style.display = 'flex';
   setStatus(`clip ready — ${(lastBlob.size / 1e6).toFixed(1)} MB`);
+  recording = false;
 });
 
 $('pngBtn').addEventListener('click', () => {
